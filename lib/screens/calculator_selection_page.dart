@@ -1,9 +1,10 @@
 
+import 'package:deneme/Screens/plate_calculator.dart';
 import 'package:flutter/material.dart';
+
 import 'bmi_calculator.dart';
 import 'calorie_calculator.dart';
 import 'iw_calculator.dart';
-import 'plate_calculator.dart';
 
 
 class calculator_selection_page extends StatelessWidget {
