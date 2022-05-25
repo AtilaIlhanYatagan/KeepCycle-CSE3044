@@ -20,7 +20,12 @@ class _PlateCalculatorState extends State<PlateCalculator> {
     super.dispose();
     _totalWeightController.dispose();
   }
-
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return int.tryParse(s) != null;
+  }
   void calculateEachSide(int totalWeight) {
     print(totalWeight);
     double eachSide = (totalWeight - 20) / 2;
@@ -222,9 +227,18 @@ class _PlateCalculatorState extends State<PlateCalculator> {
                         maxLength: 3,
                         validator: (value) {
                           if (value != null) {
-                            if (int.parse(value) % 5 != 0) {
-                              return "Please enter the multiples of 5";
+                            if(isNumeric(value)){
+                              if (int.parse(value) % 5 != 0) {
+                                return "Please enter the multiples of 5";
+                              }
                             }
+                            else if (value.isEmpty){
+                              return "Weight can not be empty!";
+                            }
+                            else{
+                              return "Only numbers allowed!";
+                            }
+
                           }
                         }),
                     Row(
@@ -241,9 +255,8 @@ class _PlateCalculatorState extends State<PlateCalculator> {
                               ),
                               onPressed: //(_weightController.text.isEmpty || _heightController.text.isEmpty)  ? null :
                                   () {
-                                final isproper =
-                                    formKey.currentState?.validate();
-                                if (isproper == true) {
+                                final isProper = formKey.currentState?.validate();
+                                if (isProper == true) {
                                   setState(() {
                                     _barCount20 = 0;
                                     _barCount10 = 0;
