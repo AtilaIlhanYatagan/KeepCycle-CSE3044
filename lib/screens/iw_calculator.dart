@@ -21,7 +21,7 @@ class _IWCalculatorState extends State<IWCalculator> {
     if (male == true) {
       return (50 + (0.91) * (height - 152.4));
     } else if (female == true) {
-      return (50 + (0.91) * (height - 152.4));
+      return (45.5 + (0.91) * (height - 152.4));
     }
     return 0;
   }
@@ -37,9 +37,9 @@ class _IWCalculatorState extends State<IWCalculator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: Colors.lightGreenAccent,
         appBar: AppBar(
-          title: const Text('Sample Code'),
+          title: const Text('Ideal Weight Calculator'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),

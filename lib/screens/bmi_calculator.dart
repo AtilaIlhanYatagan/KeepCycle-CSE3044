@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:flutter/material.dart';
 
@@ -14,9 +14,11 @@ class _BMICalculatorState extends State<BMICalculator> {
   int _height = 0;
   double _BMI = 0;
   int _calculated = 0;
+
   double calculateBMI(int weight, int height) {
     return weight / (height * height / 10000);
   }
+
   bool isNumeric(String s) {
     if (s == null) {
       return false;
@@ -54,7 +56,7 @@ class _BMICalculatorState extends State<BMICalculator> {
 
                 // needs a fix (does not update the screen)
                 // calculated == 1 print calculation results.
-                // if (_calculated == 1) BmiInfo(bmi: _BMI, height: _height),
+                 if (_calculated == 1) BmiInfo(bmi: _BMI, height: _height),
 
                 TextFormField(
                   controller: _heightController,
@@ -214,13 +216,14 @@ class _BmiInfoState extends State<BmiInfo> {
         children: [
           Container(
               padding: const EdgeInsets.only(bottom: 5.0),
-              child: Text(info)
+              child: Text(info,style: const TextStyle(fontSize: 15.0),)
           ),
           Container(
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Text('Your ideal weight is between ' +
                   idealWeightDownLimit.toStringAsFixed(1) + ' and ' +
-                  idealWeightUpperLimit.toStringAsFixed(1) +'.'
+                  idealWeightUpperLimit.toStringAsFixed(1) +'.',
+                style: const TextStyle(fontSize: 15.0),
               )
           ),
         ],

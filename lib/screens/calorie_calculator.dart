@@ -213,36 +213,6 @@ class _CalorieCalculatorState extends State<CalorieCalculator> {
                         });
                       }),
 
-                  // Container(
-                  //   color: Colors.lightBlue.shade100,
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: DropdownButtonFormField(
-                  //     decoration: InputDecoration(
-                  //         border: const OutlineInputBorder(
-                  //           borderRadius: BorderRadius.all(
-                  //             Radius.circular(30.0),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       hintStyle: const TextStyle(color: Colors.black),
-                  //       hintText: "sd",
-                  //       fillColor: Colors.black,
-                  //       value: selectedExercise,
-                  //       items: exerciseSelection
-                  //           .map(
-                  //             (e) => DropdownMenuItem(
-                  //               child: Text(e),
-                  //               value: e,
-                  //             ),
-                  //           )
-                  //           .toList(),
-                  //       onChanged: (value) {
-                  //         setState(() {
-                  //           selectedExercise = value;
-                  //         });
-                  //       }
-                  //       ),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(

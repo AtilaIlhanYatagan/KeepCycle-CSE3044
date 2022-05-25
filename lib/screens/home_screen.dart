@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'calculator_selection_page.dart';
+import 'supplement_reminder.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Center(
             child: ElevatedButton(
-              child: Text("Logout"),
+              child: const Text("Logout"),
               onPressed: () {
                 FirebaseAuth.instance.signOut().then((value) {
                   print("Signed Out");
@@ -35,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           ElevatedButton(
-            child: Text("calculators"),
+            child: const Text("calculators"),
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) {
@@ -44,11 +45,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 ));
               },
           ),
+          ElevatedButton(
+            child: const Text("suplement"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const SupplementReminder();
+                },
+              ));
+            },
+          ),
         ],
       ),
     );
   }
 }
+
 class CalculatorsPage extends StatefulWidget {
   const CalculatorsPage({
     Key? key,
