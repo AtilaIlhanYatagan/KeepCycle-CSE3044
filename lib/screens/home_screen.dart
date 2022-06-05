@@ -1,9 +1,13 @@
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deneme/screens/profileScreen.dart';
 import 'package:deneme/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'calculator_selection_page.dart';
-
+import 'package:deneme/user.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ));
               },
           ),
+          ElevatedButton(
+            child: Text("User Profile"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const profilePage();
+                },
+              ));
+            },
+          ),
         ],
       ),
     );
@@ -70,3 +85,19 @@ class _CalculatorsPageState extends State<CalculatorsPage> {
     );
   }
 }
+class profilePage extends StatefulWidget {
+  const profilePage({Key? key}) : super(key: key);
+
+  @override
+  State<profilePage> createState() => _profilePageState();
+}
+
+class _profilePageState extends State<profilePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: profileScreen(),
+    );
+  }
+}
+
