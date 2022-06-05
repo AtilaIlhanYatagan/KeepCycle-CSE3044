@@ -41,6 +41,9 @@ dependencies:
   fluttertoast: ^8.0.7
   image_picker: ^0.8.3
   firebase_storage: ^10.2.16
+  flutter_riverpod: ^1.0.3
+  provider: ^6.0.2
+  dcdg: ^4.0.1
 
 dev_dependencies:
   flutter_test:

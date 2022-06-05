@@ -3,11 +3,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deneme/screens/profileScreen.dart';
 import 'package:deneme/screens/signin_screen.dart';
+import 'package:deneme/screens/supplement_reminder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'calculator_selection_page.dart';
 import 'package:deneme/user.dart';
+
+import 'exercise_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -55,6 +58,26 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) {
                   return const profilePage();
+                },
+              ));
+            },
+          ),
+          ElevatedButton(
+            child: const Text("suplement"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const SupplementReminder();
+                },
+              ));
+            },
+          ),
+          ElevatedButton(
+            child: Text("Exercise Tracker"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const ExerciseScreen();
                 },
               ));
             },
