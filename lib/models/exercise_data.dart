@@ -1,40 +1,32 @@
-import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
 class ExerciseData extends ChangeNotifier {
-  final List<Task> _tasks = [];
+  String name;
+  bool isDone;
+  ExerciseData({required this.name , this.isDone = false});
+  void toggleDone() {
+    isDone = !isDone;
+  }
+  final List<ExerciseData> exercises = [];
 
   void addTask(newValue) {
-    final task = Task(name: newValue);
-    _tasks.add(task);
+    final task = ExerciseData(name: newValue);
+    exercises.add(task);
     notifyListeners();
   }
 
-  void updateTask(Task task) {
+  void updateTask(ExerciseData task) {
     task.toggleDone();
     notifyListeners();
   }
 
-  void deleteTask(Task task) {
-    _tasks.remove(task);
+  void deleteTask(ExerciseData task) {
+    exercises.remove(task);
     notifyListeners();
   }
 
   int get taskCount {
-    return _tasks.length;
+    return exercises.length;
   }
 
-  UnmodifiableListView<Task> get tasks {
-    return UnmodifiableListView(_tasks);
-  }
-}
-
-class Task {
-  final String name;
-  bool isDone;
-  Task({required this.name, this.isDone = false});
-
-  void toggleDone() {
-    isDone = !isDone;
-  }
 }

@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) {
-                  return const ExerciseScreen();
+                  return const Exercise_tracker();
                 },
               ));
             },
