@@ -1,72 +1,51 @@
-//TODO edit yapıldığında yeni değerle başlaması lazım
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../repositories/alarm_repository.dart';
+import 'alarm_edit_screen.dart';
 
-class SupplementReminder extends StatefulWidget {
+class SupplementReminder extends ConsumerWidget {
   const SupplementReminder({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<SupplementReminder> createState() => _SupplementReminderState();
-}
-
-class _SupplementReminderState extends State<SupplementReminder> {
-  List<Alarm> alarmList = [];
-  Alarm? lastAddedAlarm;
-  bool hasAdded = false;
-
-  void addAlarm(Alarm newAlarm) {
-    setState(() {
-      alarmList = [...alarmList, newAlarm];
-    });
-  }
-
-  void removeAlarm() {
-    setState(() {
-      if (alarmList.isEmpty) {
-        hasAdded = false;
-      } else {
-        if (alarmList.length == 1) {
-          alarmList = [];
-          hasAdded = false;
-        } else {
-          lastAddedAlarm = alarmList[alarmList.length - 2] as Alarm?;
-          alarmList.length = alarmList.length - 2;
-          alarmList = [...alarmList, lastAddedAlarm!];
-        }
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alarmRepository = ref.watch(alarmListProvider);
     return Scaffold(
       backgroundColor: Colors.red.shade200,
       appBar: AppBar(
         title: const Text('Supplement Countdown'),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              for (final alarm in alarmList) alarm,
-            ],
-          ),
-        ),
+      body: alarmRepository.hasAdded
+          ? SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  children: [
+                    for (final alarm in alarmRepository.alarmList)
+                      AlarmWidget(alarm: alarm),
+                  ],
+                ),
+              ),
+            )
+          : const Center(
+              child: Text(
+                'No alarm',
+                style: TextStyle(fontSize: 40),
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final alarmProperties =
-              await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) {
-              return AlarmEditScreen();
-            },
-          ));
-          addAlarm(Alarm(
-              alarmHeader: alarmProperties[0],
-              alarmDuration: alarmProperties[1]));
+          final alarmProperties = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return AlarmEditScreen();
+              },
+            ),
+          );
+
+          final alarm = Alarm(alarmProperties[0], alarmProperties[1]);
+          ref.read(alarmListProvider).addAlarm(alarm);
         },
         child: const Icon(Icons.add),
       ),
@@ -74,22 +53,17 @@ class _SupplementReminderState extends State<SupplementReminder> {
   }
 }
 
-class Alarm extends StatefulWidget {
-  String alarmHeader;
-  String alarmDuration;
+class AlarmWidget extends ConsumerStatefulWidget {
+  final Alarm alarm;
 
-  Alarm({
-    Key? key,
-    required this.alarmHeader,
-    required this.alarmDuration,
-  }) : super(key: key);
+  const AlarmWidget({Key? key, required this.alarm}) : super(key: key);
 
   @override
-  State<Alarm> createState() => _AlarmState();
+  ConsumerState<AlarmWidget> createState() => _AlarmWidgetState();
 }
 
-class _AlarmState extends State<Alarm> {
-  Duration duration = Duration();
+class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
+  Duration duration = const Duration();
   Timer? timer;
   bool isRunning = false;
 
@@ -97,6 +71,15 @@ class _AlarmState extends State<Alarm> {
   void initState() {
     super.initState();
     setReset();
+  }
+
+  void editAlarm(List a) {
+    setState(() {
+      widget.alarm.alarmHeader = a.first.toString();
+      timer?.cancel();
+      duration = Duration(hours: int.parse(a.last.toString()));
+      isRunning = false;
+    });
   }
 
   void startTimer() {
@@ -116,8 +99,8 @@ class _AlarmState extends State<Alarm> {
   void setReset() {
     setState(() {
       timer?.cancel();
-      duration = Duration(hours: int.parse(widget.alarmDuration));
-      isRunning=false;
+      duration = Duration(hours: int.parse(widget.alarm.alarmDuration));
+      isRunning = false;
     });
   }
 
@@ -128,7 +111,6 @@ class _AlarmState extends State<Alarm> {
       if (seconds < 0) {
         timer?.cancel();
         setReset();
-
       } else {
         duration = Duration(seconds: seconds);
       }
@@ -143,20 +125,19 @@ class _AlarmState extends State<Alarm> {
           height: 200.0,
           width: 350.0,
           decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              border: Border.all(
-                color: Colors.black,
-                width: 2.0,
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-              gradient: const LinearGradient(
-                  colors: [Colors.indigo, Colors.blueAccent]),
-              boxShadow: const [
-                BoxShadow(
-                    color: Colors.grey,
-                    blurRadius: 2.0,
-                    offset: Offset(2.0, 2.0))
-              ]),
+            color: Colors.blueAccent,
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+            borderRadius: BorderRadius.circular(10.0),
+            gradient: const LinearGradient(
+                colors: [Colors.indigo, Colors.blueAccent]),
+            boxShadow: const [
+              BoxShadow(
+                  color: Colors.grey, blurRadius: 2.0, offset: Offset(2.0, 2.0))
+            ],
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -167,7 +148,7 @@ class _AlarmState extends State<Alarm> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 12.0),
                     child: Text(
-                      widget.alarmHeader,
+                      widget.alarm.alarmHeader,
                       style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -184,78 +165,98 @@ class _AlarmState extends State<Alarm> {
                 ],
               ),
               Row(
-              children: [    
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    isRunning ? Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: IconButton(
-                              icon: const Icon(Icons.pause),
-                              color: Colors.white,
-                              onPressed: ()  {
-                              stopTimer();
-                              },
-                            )
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: IconButton(
-                              icon: const Icon(Icons.restart_alt),
-                              color: Colors.white,
-                              onPressed: ()  {
-                              setReset();
-                              },
-                            )
-                        ),
+                        isRunning
+                            ? Row(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.pause),
+                                        color: Colors.white,
+                                        onPressed: () {
+                                          stopTimer();
+                                        },
+                                      )),
+                                  Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: IconButton(
+                                        icon: const Icon(Icons.restart_alt),
+                                        color: Colors.white,
+                                        onPressed: () {
+                                          setReset();
+                                        },
+                                      )),
+                                ],
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: IconButton(
+                                  icon: const Icon(Icons.play_arrow_rounded),
+                                  color: Colors.white,
+                                  onPressed: () {
+                                    startTimer();
+                                  },
+                                ),
+                              ),
                       ],
-                    )
-                        :
-                    Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.play_arrow_rounded),
-                          color: Colors.white,
-                          onPressed: ()  {
-                            startTimer();
-                          },
-                        )
                     ),
-                  ]
                   ),
-                ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: IconButton(
-                              icon: const Icon(Icons.edit),
-                              color: Colors.white,
-                              onPressed: () async {
-                                widget.alarmHeader = await Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                  builder: (context) {
-                                    return AlarmEditScreen();
-                                  },
-                                ));
-                                setState(() {});
-                              })),
+                        padding: const EdgeInsets.all(5.0),
+                        child: IconButton(
+                            icon: const Icon(Icons.edit),
+                            color: Colors.white,
+                            onPressed: () async {
+                              final List newAlarmValues =
+                                  await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                builder: (context) {
+                                  return AlarmEditScreen();
+                                },
+                              ));
+                              editAlarm(newAlarmValues);
+                            }),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: IconButton(
-                          icon: const Icon(Icons.delete),
-                          color: Colors.white,
-                          tooltip: 'Increase volume by 10',
-                          onPressed: () {
-                            setState(() {
-                              //TODO silme yapılacak
-                            });
-                          },
-                        ),
+                            icon: const Icon(Icons.delete),
+                            color: Colors.white,
+                            onPressed: () {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text(''),
+                                  content: const Text('Deleting alarm'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Delete'),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              ).then((value) {
+                                if (value == 'Delete') {
+                                  ref
+                                      .read(alarmListProvider)
+                                      .removeAlarm(widget.alarm);
+                                }
+                              });
+                            }),
                       ),
                     ],
                   ),
@@ -304,91 +305,9 @@ class _AlarmState extends State<Alarm> {
           ),
         ),
         Text(header,
-        style:  TextStyle(fontWeight: FontWeight.bold,color:Colors.red.shade300)
-        )
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.red.shade300))
       ],
     );
-  }
-}
-
-class AlarmEditScreen extends StatelessWidget {
-  AlarmEditScreen({Key? key}) : super(key: key);
-
-  final TextEditingController _alarmNameController = TextEditingController();
-  final TextEditingController _alarmTimeController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.red.shade200,
-        appBar: AppBar(
-          title: const Text('Alarm Settings'),
-        ),
-        body: Column(
-          children: [
-            Container(
-                padding: const EdgeInsets.all(10.0),
-                child: TextFormField(
-                  controller: _alarmNameController,
-                  decoration: InputDecoration(
-                      hintText: 'Alarm Name',
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _alarmNameController.clear();
-                        },
-                        icon: const Icon(Icons.delete),
-                      ),
-                      border: const OutlineInputBorder(),
-                      fillColor: Colors.lightBlue.shade100,
-                      filled: true),
-                  keyboardType: TextInputType.text,
-                  // validator: (value) {
-                  //   if (value != null) {
-                  //     if (int.parse(value) % 5 != 0) {
-                  //       return "Please enter the multiples of 5";
-                  //     }
-                  //   }
-                  // }
-                )),
-            Container(
-                padding: const EdgeInsets.all(10.0),
-                child: TextFormField(
-                  controller: _alarmTimeController,
-                  decoration: InputDecoration(
-                      hintText: 'Frequency of use in hours: (Ex:12)',
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _alarmTimeController.clear();
-                        },
-                        icon: const Icon(Icons.delete),
-                      ),
-                      border: const OutlineInputBorder(),
-                      fillColor: Colors.lightBlue.shade100,
-                      filled: true),
-                  keyboardType: TextInputType.text,
-                  // validator: (value) {
-                  //   if (value != null) {
-                  //     if (int.parse(value) % 5 != 0) {
-                  //       return "Please enter the multiples of 5";
-                  //     }
-                  //   }
-                  // }
-                )),
-            Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: ElevatedButton.icon(
-                    label: const Text('Save'),
-                    icon: const Icon(Icons.save, color: Colors.white),
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(120.0, 45.0)),
-                    onPressed: () {
-                      final List<String> list = [
-                        _alarmNameController.text,
-                        _alarmTimeController.text
-                      ];
-                      Navigator.of(context).pop(list);
-                    }))
-          ],
-        ));
   }
 }
