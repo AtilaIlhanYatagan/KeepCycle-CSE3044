@@ -1,16 +1,8 @@
-
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deneme/screens/profileScreen.dart';
-import 'package:deneme/screens/signin_screen.dart';
-import 'package:deneme/screens/supplement_reminder.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'calculator_selection_page.dart';
-import 'package:deneme/user.dart';
-
 import 'exercise_screen.dart';
+import 'profileScreen.dart';
+import 'supplement_reminder.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,73 +12,61 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    profilePage(),        //index 0
+    SupplementReminder(), //index 1
+    calculator_selection_page(), //index 2
+    Exercise_tracker() //index 3
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('This is the homepage'),
+
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: ElevatedButton(
-              child: Text("Logout"),
-              onPressed: () {
-                FirebaseAuth.instance.signOut().then((value) {
-                  print("Signed Out");
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignInScreen()));
-                });
-              },
-            ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Profile',
+            backgroundColor: Colors.red,
           ),
-          ElevatedButton(
-            child: Text("calculators"),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) {
-                    return const CalculatorsPage();
-                  },
-                ));
-              },
+          BottomNavigationBarItem(
+            icon: Icon(Icons.alarm),
+            label: 'Reminder',
+            backgroundColor: Colors.green,
           ),
-          ElevatedButton(
-            child: Text("User Profile"),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return const profilePage();
-                },
-              ));
-            },
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calculate),
+            label: 'Calculators',
+            backgroundColor: Colors.purple,
           ),
-          ElevatedButton(
-            child: const Text("suplement"),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return const SupplementReminder();
-                },
-              ));
-            },
-          ),
-          ElevatedButton(
-            child: Text("Exercise Tracker"),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return const ExerciseScreen();
-                },
-              ));
-            },
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Tracker',
+            backgroundColor: Colors.pink,
           ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
 }
+
 class CalculatorsPage extends StatefulWidget {
   const CalculatorsPage({
     Key? key,
@@ -123,4 +103,3 @@ class _profilePageState extends State<profilePage> {
     );
   }
 }
-

@@ -3,7 +3,6 @@ import 'package:deneme/screens/profileEdit.dart';
 import 'package:deneme/screens/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:deneme/screens/home_screen.dart';
 import 'pictureEdit.dart';
 
 class profileScreen extends StatefulWidget {
@@ -32,7 +31,8 @@ class _profileScreenState extends State<profileScreen> {
     });
 
   }
-void initState(){
+@override
+  void initState(){
     getData();
 }
 
@@ -42,70 +42,157 @@ void initState(){
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text("User Profile"),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.logout_sharp,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                FirebaseAuth.instance.signOut().then((value) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const SignInScreen()));
+                });
+              },
+            )
+          ],
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildProfileImage(),
-              showName(),
-              showEmail(),
-              showGender(),
-              showHeight(),
-              showWeight(),
-              editProfile(),
-              editPicture(),
-              mainMenu(),
-              logOut(),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 80.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildProfileImage(),
+                editPicture(),
+                showName(),
+                showEmail(),
+                showGender(),
+                showHeight(),
+                showWeight(),
+                Column(
+                  children: [
+                    editProfile(),
+                  ],
+                ),
+                //mainMenu(),
+                //logOut(),
+              ],
+            ),
           ),
         )
     );
   }
 
   Widget showGender()=>
-      Text("Gender: "+ gender,);
-  Widget showHeight()=>
-      Text("Height: "+ height,);
-  Widget showWeight()=>
-      Text("Weight: "+ weight );
-  Widget mainMenu()=>
-      ElevatedButton(
-        child: Text("Go Main Menu"),
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => HomeScreen()));
-        },
+      RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 14.0,
+            color: Colors.black,
+          ),
+          children: <TextSpan>[
+            const TextSpan(text: 'Gender: '),
+            TextSpan(text: gender, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
       );
-  //Widget genderChoose()=>;
+
+  Widget showHeight()=>
+      RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 14.0,
+            color: Colors.black,
+          ),
+          children: <TextSpan>[
+            const TextSpan(text: 'Height: '),
+            TextSpan(text: height, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      );
+
+  Widget showWeight()=>
+      RichText(
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 14.0,
+            color: Colors.black,
+          ),
+          children: <TextSpan>[
+            const TextSpan(text: 'Weight: '),
+            TextSpan(text: weight, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      );
+
+  // Widget mainMenu()=>
+  //     ElevatedButton(
+  //       child: Text("Go Main Menu"),
+  //       onPressed: () {
+  //         Navigator.push(context,
+  //             MaterialPageRoute(builder: (context) => HomeScreen()));
+  //       },
+  //     );
+  // //Widget genderChoose()=>;
+
   Widget logOut()=>
       ElevatedButton(
-        child: Text("Logout"),
+        child: const Text("Logout"),
         onPressed: () {
           FirebaseAuth.instance.signOut().then((value) {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SignInScreen()));
+                MaterialPageRoute(builder: (context) => const SignInScreen()));
           });
         },
       );
+
   Widget showEmail()=>
       Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children:  [
-          Icon(
-              Icons.email
+          const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(
+                Icons.email
+            ),
           ),
-          Text("Email: "+ email,)
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.black,
+              ),
+              children: <TextSpan>[
+                const TextSpan(text: 'Email: '),
+                TextSpan(text: email, style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
         ],
       );
+
   Widget showName() =>
       Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children:  [
-          Icon(
-              Icons.account_circle
+          const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(
+                Icons.account_circle
+            ),
           ),
-          Text("Name: "+name,)
+          RichText(
+          text: TextSpan(
+          style: const TextStyle(
+          fontSize: 14.0,
+          color: Colors.black,
+          ),
+          children: <TextSpan>[
+          const TextSpan(text: 'Name: '),
+          TextSpan(text: name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+          ),
+          ),
         ],
       );
   Widget editProfile() =>
@@ -120,25 +207,35 @@ void initState(){
         },
       );
   Widget editPicture() =>
-      ElevatedButton(
-        child: const Text("Edit Picture"),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) {
-              return const pictureEdit();
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            child: const Text("Edit Picture"),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const pictureEdit();
+                },
+              ));
             },
-          ));
-        },
+          ),
+        ],
       );
   Widget buildProfileImage() {
     setState(() {
     });
-    return
-      CircleAvatar(
-    radius: 100,
-    backgroundColor: Colors.grey.shade800,
-    backgroundImage:  NetworkImage(url),
-  );}
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+          radius: 100,
+          backgroundColor: Colors.grey.shade800,
+          backgroundImage:  NetworkImage(url),
+          ),
+        ],
+      );
+  }
 
 
 }

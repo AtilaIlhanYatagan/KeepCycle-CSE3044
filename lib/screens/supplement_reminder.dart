@@ -15,6 +15,7 @@ class SupplementReminder extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.red.shade200,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Supplement Countdown'),
       ),
       body: alarmRepository.hasAdded
